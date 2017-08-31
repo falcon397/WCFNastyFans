@@ -5,48 +5,56 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
+using System.Configuration;
+using System.Web.Script.Services;
+using System.Web.Script.Serialization;
 using MySql.Data.MySqlClient;
+using System.Data;
+using Newtonsoft.Json;
 
 namespace WCFNastyFans
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "NastyFanServic" in code, svc and config file together.
-    // NOTE: In order to launch WCF Test Client for testing this service, please select NastyFanServic.svc or NastyFanServic.svc.cs at the Solution Explorer and start debugging.
-    public class NastyFanServic : INastyFans
+    public class NastyFanService : INastyFans
     {
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string GetBuysData()
         {
-            MySqlConnectionStringBuilder conn_string = new MySqlConnectionStringBuilder();
-            conn_string.Server = "192.168.1.2";
-            conn_string.Port = 3306;
-            conn_string.UserID = "analyzer";
-            conn_string.Password = "9rmXo5X0z6UCXHBW";
-            conn_string.Database = "analyzer";
+            //Create connection string, sql command, and data tables and sets needed to sort the data
+            MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["ConnAnalyzer"].ConnectionString);
+            MySqlCommand cmd = new MySqlCommand("select date, seats, price_per_seat from buys", conn);
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
+            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
 
-            using (MySqlConnection conn = new MySqlConnection(conn_string.ToString()))
-            using (MySqlCommand cmd = new MySqlCommand("select * from buys"))
+            //Always try your connections
+            try
             {
-                try
-                {
-                    conn.Open();
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-
-                            }
-                        }
-                    }
-                }
-
-                finally
-                {
-                    conn.Close();
-                }
+                da.SelectCommand.Connection = conn;
+                da.Fill(dt);
             }
 
-            return "";
+            //Because when they fail you make sure the garbage collector is working
+            finally
+            {
+                conn.Close();
+            }
+
+            //Loop through row and column to parse the data for JSON serialization
+            List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
+            Dictionary<string, object> row;
+            foreach (DataRow dr in dt.Rows)
+            {
+                row = new Dictionary<string, object>();
+                foreach (DataColumn col in dt.Columns)
+                {
+                    row.Add(col.ColumnName, dr[col]);
+                }
+                rows.Add(row);
+            }
+
+            //Serialize the JSON return object and send it back to the client
+            JavaScriptSerializer serialize = new JavaScriptSerializer();
+            return serialize.Serialize(rows);
         }
     }
 }
