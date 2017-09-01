@@ -11,12 +11,15 @@ using System.Web.Script.Serialization;
 using MySql.Data.MySqlClient;
 using System.Data;
 using Newtonsoft.Json;
+using System.ServiceModel.Activation;
 
 namespace WCFNastyFans
 {
+    [AspNetCompatibilityRequirements(RequirementsMode
+    = AspNetCompatibilityRequirementsMode.Allowed)]
     public class NastyFanService : INastyFans
     {
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+
         public string GetBuysData()
         {
             //Create connection string, sql command, and data tables and sets needed to sort the data

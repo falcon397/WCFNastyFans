@@ -14,6 +14,9 @@ namespace WCFNastyFans
     {
 
         [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json)]
         string GetBuysData();
 
         // TODO: Add your service operations here
