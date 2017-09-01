@@ -17,8 +17,19 @@ namespace WCFNastyFans
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json)]
-        string GetBuysData();
+        string getBuys();
 
-        // TODO: Add your service operations here
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json)]
+        string getActiveMembers();
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json)]
+        string getExchangeRate();
     }
 }

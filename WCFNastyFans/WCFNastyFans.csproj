@@ -76,7 +76,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constructors\buys.cs" />
+    <Compile Include="getData.cs" />
     <Compile Include="NastyFanService.svc.cs">
       <DependentUpon>NastyFanService.svc</DependentUpon>
     </Compile>
