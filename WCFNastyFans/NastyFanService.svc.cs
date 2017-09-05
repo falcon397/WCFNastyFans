@@ -6,55 +6,45 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 using System.Configuration;
-using System.Web.Script.Services;
 using System.Web.Script.Serialization;
 using MySql.Data.MySqlClient;
 using System.Data;
-using Newtonsoft.Json;
+
+using System.ServiceModel.Activation;
 
 namespace WCFNastyFans
 {
+    [AspNetCompatibilityRequirements(RequirementsMode
+    = AspNetCompatibilityRequirementsMode.Allowed)]
     public class NastyFanService : INastyFans
     {
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string GetBuysData()
+
+        public string getBuys()
         {
             //Create connection string, sql command, and data tables and sets needed to sort the data
             MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["ConnAnalyzer"].ConnectionString);
             MySqlCommand cmd = new MySqlCommand("select date, seats, price_per_seat from buys", conn);
-            DataSet ds = new DataSet();
-            DataTable dt = new DataTable();
-            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
 
-            //Always try your connections
-            try
-            {
-                da.SelectCommand.Connection = conn;
-                da.Fill(dt);
-            }
+            return new getData(conn, cmd).returnJSON;
+            
+        }
 
-            //Because when they fail you make sure the garbage collector is working
-            finally
-            {
-                conn.Close();
-            }
+        public string getActiveMembers()
+        {
+            //Create connection string, sql command, and data tables and sets needed to sort the data
+            MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["ConnAnalyzer"].ConnectionString);
+            MySqlCommand cmd = new MySqlCommand("select date, activeMembers from activeMembers", conn);
 
-            //Loop through row and column to parse the data for JSON serialization
-            List<Dictionary<string, object>> lstRows = new List<Dictionary<string, object>>();
-            Dictionary<string, object> row;
-            foreach (DataRow dr in dt.Rows)
-            {
-                row = new Dictionary<string, object>();
-                foreach (DataColumn col in dt.Columns)
-                {
-                    row.Add(col.ColumnName, dr[col]);
-                }
-                lstRows.Add(row);
-            }
+            return new getData(conn, cmd).returnJSON;
+        }
 
-            //Serialize the JSON return object and send it back to the client
-            JavaScriptSerializer serialize = new JavaScriptSerializer();
-            return serialize.Serialize(lstRows);
+        public string getExchangeRate()
+        {
+            //Create connection string, sql command, and data tables and sets needed to sort the data
+            MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["ConnAnalyzer"].ConnectionString);
+            MySqlCommand cmd = new MySqlCommand("select date, price from exchangeRate", conn);
+
+            return new getData(conn, cmd).returnJSON;
         }
     }
 }
