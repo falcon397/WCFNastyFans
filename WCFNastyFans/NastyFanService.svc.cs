@@ -40,7 +40,7 @@ namespace WCFNastyFans
             }
 
             //Loop through row and column to parse the data for JSON serialization
-            List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
+            List<Dictionary<string, object>> lstRows = new List<Dictionary<string, object>>();
             Dictionary<string, object> row;
             foreach (DataRow dr in dt.Rows)
             {
@@ -49,12 +49,12 @@ namespace WCFNastyFans
                 {
                     row.Add(col.ColumnName, dr[col]);
                 }
-                rows.Add(row);
+                lstRows.Add(row);
             }
 
             //Serialize the JSON return object and send it back to the client
             JavaScriptSerializer serialize = new JavaScriptSerializer();
-            return serialize.Serialize(rows);
+            return serialize.Serialize(lstRows);
         }
     }
 }
