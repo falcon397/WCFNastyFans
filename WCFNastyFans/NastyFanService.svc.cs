@@ -23,7 +23,7 @@ namespace WCFNastyFans
         {
             //Create connection string, sql command, and data tables and sets needed to sort the data
             MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["ConnAnalyzer"].ConnectionString);
-            MySqlCommand cmd = new MySqlCommand("select date, seats, price_per_seat from buys", conn);
+            MySqlCommand cmd = new MySqlCommand("select date, seats, price_per_seat from buys order by date desc", conn);
 
             return new getData(conn, cmd).returnJSON;
             
